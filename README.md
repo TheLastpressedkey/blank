@@ -7,6 +7,11 @@
 
 ![Manifest](https://i.imgur.com/sdKEe3H.png)
 
+### Fork note
+
+This fork add support for storing notes to Deta Space. If you want get access to Deta Space, send me an email: `mustafa at deta.sh`
+
+
 ### Table of Contents
 
 - [Introduction](#introduction)

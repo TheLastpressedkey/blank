@@ -70,16 +70,5 @@
 			</main>
 		</noscript>
 		<script type="text/javascript" src="./js/index.js"></script>
-		<script type="text/javascript">
-			if ("serviceWorker" in navigator) {
-				navigator.serviceWorker.register("./service-worker.js", { scope: "/" }).then(function (serviceWorker) {
-					console.log("Service Worker registered.");
-					console.log(serviceWorker);
-				}).catch(function (error) {
-					console.log("Error registering the Service Worker.");
-					console.log(error);
-				});
-			}
-		</script>
   	</body>
 </html>

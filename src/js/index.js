@@ -1,5 +1,5 @@
 import { GRID_SIZE, MARGIN, DRAG_INDEX, STATIC_INDEX, DEFAULT_MEMO } from "./globals";
-import { snapToGrid, confirm, generateUUID, getLocalStorageItem, setLocalStorageItem, decreaseAllMemoIndexes, checkBounds } from "./utils";
+import { snapToGrid, confirm, generateUUID, decreaseAllMemoIndexes, checkBounds, updateMemo, deleteMemo, createMemo, fetchMemos, getConf, setConf } from "./utils";
 
 import "../sass/index.scss";
 
@@ -28,9 +28,10 @@ function onMouseDown(e) {
 /*
   Memo Functions and Handlers
 */
-
-function createMemo(id, text, position, size) {
+// storage
+function newMemo(id, text, position, size) {
   const memo = document.createElement("div");
+
   memo.setAttribute("data-id", id);
   memo.classList.add("memo");
   memo.style.top = `${position.top}px`;
@@ -56,9 +57,7 @@ function createMemo(id, text, position, size) {
   });
   textarea.addEventListener("blur", function (e) { e.target.classList.remove("active"); }, { passive: false, useCapture: false });
   textarea.addEventListener("input", function (e) {
-    const memos = getLocalStorageItem("manifest_memos");
-    memos[id] = { ...memos[id], text: e.target.value };
-    setLocalStorageItem("manifest_memos", memos);
+    updateMemo(id, { text: e.target.value });
   }, { passive: false, useCapture: false });
 
   memo.appendChild(textarea);
@@ -71,9 +70,9 @@ function createMemo(id, text, position, size) {
 
   const close = document.createElement("div");
   close.classList.add("close");
-  close.innerHTML = "–";
-  close.addEventListener("mouseup", handleMemoClose);
-  close.addEventListener("touchend", handleMemoClose);
+  close.innerHTML = "×";
+  close.addEventListener("mouseup", handleDeleteMemo);
+  close.addEventListener("touchend", handleDeleteMemo);
   memo.appendChild(close);
 
   const resize = document.createElement("div");
@@ -129,6 +128,7 @@ function handleMemoDragMove(e) {
   }
 };
 
+// storage
 function handleMemoDragEnd(e) {
   const bounds = checkBounds(board.getBoundingClientRect(), activeMemo.getBoundingClientRect());
 
@@ -162,9 +162,7 @@ function handleMemoDragEnd(e) {
   textarea.focus();
 
   const id = activeMemo.dataset.id;
-  const memos = getLocalStorageItem("manifest_memos");
-  memos[id] = { ...memos[id], position: { top, left } };
-  setLocalStorageItem("manifest_memos", memos);
+  updateMemo(id, { position: { top, left } });
 
   document.body.style.cursor = null;
   activeMemo = null;
@@ -178,13 +176,10 @@ function handleMemoDragEnd(e) {
   document.removeEventListener("touchend", handleMemoDragEnd);
 };
 
-function handleMemoClose(e) {
+function handleDeleteMemo(e) {
   if (confirm("Are you sure you want to remove this memo?")) {
     const id = e.target.parentNode.dataset.id;
-    const memos = getLocalStorageItem("manifest_memos");
-    delete memos[id];
-    setLocalStorageItem("manifest_memos", memos);
-
+    deleteMemo(id);
     board.removeChild(e.target.parentNode);
   }
 };
@@ -238,6 +233,7 @@ function handleMemoResizeMove(e) {
   }
 };
 
+// storage
 function handleMemoResizeEnd(e) {
   const x = (e.touches && e.touches.length > 0) ? snapToGrid(e.touches[0].clientX, GRID_SIZE) : snapToGrid(e.clientX, GRID_SIZE);
   const y = (e.touches && e.touches.length > 0) ? snapToGrid(e.touches[0].clientY, GRID_SIZE) : snapToGrid(e.clientY, GRID_SIZE);
@@ -278,9 +274,7 @@ function handleMemoResizeEnd(e) {
   textarea.focus();
 
   const id = activeMemo.dataset.id;
-  const memos = getLocalStorageItem("manifest_memos");
-  memos[id] = { ...memos[id], size: { width, height } };
-  setLocalStorageItem("manifest_memos", memos);
+  updateMemo(id, { size: { width, height } });
 
   document.body.style.cursor = null;
   activeMemo = null;
@@ -341,6 +335,7 @@ function handleBoardDragMove(e) {
   selection.style.height = `${height}px`;
 };
 
+// storage
 function handleBoardDragEnd(e) {
   const boardRect = board.getBoundingClientRect();
   const selectionRect = selection.getBoundingClientRect();
@@ -367,16 +362,12 @@ function handleBoardDragEnd(e) {
 
   if (width >= 80 && height >= 80) {
     const id = generateUUID();
-    const memo = createMemo(id, null, { top, left }, { width, height });
+    const memo = newMemo(id, null, { top, left }, { width, height });
     board.appendChild(memo);
 
     const textarea = memo.querySelectorAll(".input")[0];
     textarea.focus();
-
-    const memos = getLocalStorageItem("manifest_memos");
-    memos[id] = { text: null, position: { top, left }, size: { width, height } };
-    setLocalStorageItem("manifest_memos", memos);
-
+    createMemo({ key: id, text: null, position: { top, left }, size: { width, height } });
     activeMemo = memo;
   }
 
@@ -396,36 +387,39 @@ function handleBoardDragEnd(e) {
   App Functions
 */
 
+// storage
 function toggleTheme() {
   const body = document.querySelector("body");
   if (theme === "light") {
     body.classList.add("dark");
     theme = "dark";
-    setLocalStorageItem("manifest_theme", "dark");
+    setConf("theme", "dark");
+
+    // setLocalStorageItem("manifest_theme", "dark");
   } else {
     body.classList.remove("dark");
+    setConf("theme", "light");
     theme = "light";
-    setLocalStorageItem("manifest_theme", "light");
+    // setLocalStorageItem("manifest_theme", "light");
   }
 
   // Redraw the canvas
   onResize();
 }
 
-function handleTheme() {
+// storage
+async function handleTheme() {
   const body = document.querySelector("body");
-  const savedPreference = getLocalStorageItem("manifest_theme");
+  const savedPreference = await getConf("theme");
 
   // Prefer saved preference over OS preference
   if (savedPreference) {
     if (savedPreference === "dark") {
       body.classList.add("dark");
       theme = "dark";
-      setLocalStorageItem("manifest_theme", "dark");
     } else {
       body.classList.remove("dark");
       theme = "light";
-      setLocalStorageItem("manifest_theme", "light");
     }
     return;
   }
@@ -477,7 +471,8 @@ function onResize() {
   currentSize = null;
 };
 
-function onLoad() {
+// storage
+async function onLoad() {
   handleTheme();
 
   main = document.createElement("main");
@@ -500,17 +495,15 @@ function onLoad() {
     event.preventDefault();
   }, { passive: false, useCapture: false });
 
-  const memos = getLocalStorageItem("manifest_memos");
+  // const memos = getLocalStorageItem("manifest_memos");
+  const memos = await fetchMemos();
+  console.log("memos", memos);
   if (!memos || Object.keys(memos).length === 0) {
-    const memo = createMemo(DEFAULT_MEMO.id, DEFAULT_MEMO.text, DEFAULT_MEMO.position, DEFAULT_MEMO.size);
+    const memo = newMemo(DEFAULT_MEMO.id, DEFAULT_MEMO.text, DEFAULT_MEMO.position, DEFAULT_MEMO.size);
     board.appendChild(memo);
-
-    const memos = {};
-    memos[DEFAULT_MEMO.id] = { text: DEFAULT_MEMO.text, position: DEFAULT_MEMO.position, size: DEFAULT_MEMO.size };
-    setLocalStorageItem("manifest_memos", memos);
   } else {
     for (const key of Object.keys(memos)) {
-      const memo = createMemo(key, memos[key].text, memos[key].position, memos[key].size);
+      const memo = newMemo(memos[key].key, memos[key].text, memos[key].position, memos[key].size);
       board.appendChild(memo);
     }
   }

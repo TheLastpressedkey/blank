@@ -1,5 +1,8 @@
 @use "reset";
-
+@font-face {
+    font-family: 'Writer Regular';
+    src: url(../assets/fonts/Writer-Regular.ttf) ;
+}
 :root {
     --foreground: black;
     --background: white;
@@ -103,7 +106,7 @@ body {
                     outline: 0;
                     resize: none;
                     overflow: auto;
-                    font-family: monospace;
+                    font-family: 'Writer Regular', monospace;
                     font-size: 13px;
                     cursor: text;
                     background: var(--background);

@@ -37,7 +37,9 @@
     "pre-commit": "^1.2.2",
     "sass": "^1.26.9"
   },
-  "dependencies": {},
+  "dependencies": {
+    "deta": "0.0.8"
+  },
   "scripts": {
     "lint": "./node_modules/.bin/eslint . --fix",
     "dev": "parcel ./src/index.html --port 3000 --no-cache --open",
