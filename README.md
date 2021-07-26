@@ -5,6 +5,8 @@
 [![Size](https://img.shields.io/bundlephobia/minzip/manifest?style=flat)](https://github.com/jonathontoon/manifest/releases/latest)
 [![Project License](https://img.shields.io/github/license/jonathontoon/manifest.svg)](https://github.com/jonathontoon/manifest/blob/master/LICENSE)
 
+[![Deploy](https://button.deta.dev/1/svg)](https://go.deta.dev/deploy)
+
 ![Manifest](https://i.imgur.com/sdKEe3H.png)
 
 ### Fork note
