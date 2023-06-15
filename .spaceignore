@@ -1,0 +1,5 @@
+.venv
+.space
+.github
+dist
+node_modules

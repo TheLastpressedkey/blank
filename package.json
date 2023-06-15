@@ -1,9 +1,9 @@
 {
-  "name": "manifest",
+  "name": "blank",
   "version": "1.1.1",
   "description": "An instant grid-based pinboard for note taking.",
   "main": "src/js/index.js",
-  "repository": "https://github.com/jonathontoon/manifest",
+  "repository": "https://github.com/abdelhai/blank",
   "author": "Jonathon Toon",
   "license": "GPL 2.0",
   "private": true,
@@ -42,7 +42,7 @@
   },
   "scripts": {
     "lint": "./node_modules/.bin/eslint . --fix",
-    "dev": "parcel ./src/index.html --port 3000 --no-cache --open",
+    "dev": "parcel ./src/index.html --port 3000 --no-cache & uvicorn main:app --port $PORT --reload",
     "prebuild": "rm -rf ./dist/",
     "build": "parcel build ./src/index.html --no-content-hash --no-cache --public-url ./"
   },

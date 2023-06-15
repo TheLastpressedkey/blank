@@ -19,7 +19,7 @@ class CustomStatic(StaticFiles):
         response.set_cookie("__pk", os.getenv("DETA_PROJECT_KEY"))
         await response(scope, receive, send)
 routes = [
-    Mount('/', app=CustomStatic(directory='.', html=True), name="static"),
+    Mount('/', app=CustomStatic(directory='dist', html=True), name="static"),
 ]
 
 app = Starlette(routes=routes)

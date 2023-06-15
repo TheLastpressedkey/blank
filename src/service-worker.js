@@ -1,4 +1,4 @@
-const cacheName = "manifest-1.0.0";
+const cacheName = "blank-1.0.0";
 
 self.addEventListener("install", function (e) {
   e.waitUntil(
