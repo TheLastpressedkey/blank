@@ -1,14 +1,9 @@
 import { GRID_SIZE } from "./globals";
-import { Deta } from "deta";
+import { Base } from "deta";
 
-function getCookie(name) {
-  var b = document.cookie.match("(^|;)\\s*" + name + "\\s*=\\s*([^;]+)");
-  return b ? b.pop() : "";
-}
 
-const deta = Deta(getCookie("__pk"));
-const memodb = deta.Base("memos");
-const confdb = deta.Base("config");
+const memodb = Base("memos");
+const confdb = Base("config");
 
 export function confirm(text) {
   return window.confirm(text);
@@ -18,26 +13,25 @@ export async function getConf(key) {
   const r = await confdb.get(key);
   return r ? r.value : null;
 }
-export function setConf(key, item) {
-  confdb.put(item, key);
+export async function setConf(key, item) {
+  await confdb.put(item, key);
 }
 
-export function createMemo(item) {
-  memodb.put(item);
+export async function createMemo(item) {
+  await memodb.put(item);
   // console.log("create", id, item)
 }
 
-export function updateMemo(id, item) {
-  memodb.update(item, id);
-  console.log(id, item);
+export async function updateMemo(id, item) {
+  await memodb.update(item, id);
 }
 
 export async function fetchMemos() {
-  return (await memodb.fetch().next()).value;
+  return (await memodb.fetch()).items;
 }
 
-export function deleteMemo(id) {
-  memodb.delete(id);
+export async function deleteMemo(id) {
+  await memodb.delete(id);
 }
 
 export function snapToGrid(value, grid) {

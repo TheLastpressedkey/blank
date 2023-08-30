@@ -336,7 +336,7 @@ function handleBoardDragMove(e) {
 };
 
 // storage
-function handleBoardDragEnd(e) {
+async function handleBoardDragEnd(e) {
   const boardRect = board.getBoundingClientRect();
   const selectionRect = selection.getBoundingClientRect();
 
@@ -367,7 +367,7 @@ function handleBoardDragEnd(e) {
 
     const textarea = memo.querySelectorAll(".input")[0];
     textarea.focus();
-    createMemo({ key: id, text: null, position: { top, left }, size: { width, height } });
+    await createMemo({ key: id, text: null, position: { top, left }, size: { width, height } });
     activeMemo = memo;
   }
 
@@ -497,7 +497,7 @@ async function onLoad() {
 
   // const memos = getLocalStorageItem("manifest_memos");
   const memos = await fetchMemos();
-  console.log("memos", memos);
+  // console.log("memos", memos);
   if (!memos || Object.keys(memos).length === 0) {
     const memo = newMemo(DEFAULT_MEMO.id, DEFAULT_MEMO.text, DEFAULT_MEMO.position, DEFAULT_MEMO.size);
     board.appendChild(memo);

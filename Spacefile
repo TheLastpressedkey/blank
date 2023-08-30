@@ -2,15 +2,12 @@
 v: 0
 icon: icon.png
 micros:
-  - name: blank
+  - name: main
     src: ./
-    engine: python3.9
+    engine: static
     primary: true
     commands: ["yarn", "yarn build"]
-    include: ["dist", "main.py"]
-    public_routes:
-      # - /Writer-Regular*
-      - /manifest.webmanifest
-    run: uvicorn main:app
+    public_routes: ["/manifest.webmanifest"]
+    serve: dist
     dev: yarn dev
 
